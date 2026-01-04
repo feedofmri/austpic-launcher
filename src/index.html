@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Launching to AustPic</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .countdown-container {
+            text-align: center;
+            color: white;
+            z-index: 10;
+            position: relative;
+        }
+
+        .countdown-container.hidden {
+            display: none;
+        }
+
+        .countdown-text {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 40px;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f7d794);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientText 3s ease infinite;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes gradientText {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .countdown-number {
+            font-size: 12rem;
+            font-weight: 700;
+            animation: pulse 1s ease-in-out;
+            background: linear-gradient(45deg, #FFD700, #FFA500, #FF6347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.8))
+                    drop-shadow(0 0 80px rgba(255, 165, 0, 0.6));
+            position: relative;
+        }
+
+        .countdown-number::before {
+            content: attr(data-number);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, #FFD700, #FFA500, #FF6347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: blur(20px);
+            opacity: 0.7;
+            z-index: -1;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.5) rotateY(0deg);
+                opacity: 0;
+                filter: blur(10px);
+            }
+            50% {
+                transform: scale(1.15) rotateY(180deg);
+                filter: blur(0px);
+            }
+            100% {
+                transform: scale(1) rotateY(360deg);
+                opacity: 1;
+                filter: blur(0px);
+            }
+        }
+
+        .rocket-container {
+            display: none;
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .rocket-container.active {
+            display: block;
+        }
+
+        .rocket {
+            position: absolute;
+            bottom: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 180px;
+            animation: launch 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            filter: drop-shadow(0 0 50px rgba(255, 100, 50, 0.8));
+        }
+
+        @keyframes launch {
+            0% {
+                bottom: -200px;
+                transform: translateX(-50%) rotate(0deg) scale(1);
+                filter: drop-shadow(0 0 50px rgba(255, 100, 50, 0.8));
+            }
+            20% {
+                transform: translateX(-50%) rotate(-3deg) scale(1.05);
+            }
+            40% {
+                transform: translateX(-50%) rotate(3deg) scale(1.05);
+            }
+            60% {
+                transform: translateX(-50%) rotate(-2deg) scale(1);
+            }
+            100% {
+                bottom: 130vh;
+                transform: translateX(-50%) rotate(0deg) scale(0.8);
+                filter: drop-shadow(0 0 100px rgba(255, 100, 50, 1));
+            }
+        }
+
+        .rocket-body {
+            width: 70px;
+            height: 120px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #c92a2a 100%);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 50% 50% 0 0;
+            box-shadow:
+                inset 0 -10px 30px rgba(0, 0, 0, 0.3),
+                inset 0 10px 30px rgba(255, 255, 255, 0.2),
+                0 0 40px rgba(255, 107, 107, 0.6);
+            position: relative;
+        }
+
+        .rocket-body::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 30%;
+            height: 40%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent);
+            border-radius: 50%;
+            filter: blur(5px);
+        }
+
+        .rocket-nose {
+            width: 0;
+            height: 0;
+            border-left: 35px solid transparent;
+            border-right: 35px solid transparent;
+            border-bottom: 60px solid #ff6b6b;
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            filter: drop-shadow(0 -5px 20px rgba(255, 107, 107, 0.5));
+        }
+
+        .rocket-nose::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: -25px;
+            width: 20px;
+            height: 30px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), transparent);
+            border-radius: 50%;
+            filter: blur(3px);
+        }
+
+        .rocket-window {
+            width: 28px;
+            height: 28px;
+            background: radial-gradient(circle at 30% 30%, #4ecdc4, #2980b9);
+            border-radius: 50%;
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 3px solid #1a5490;
+            box-shadow:
+                inset 0 0 15px rgba(255, 255, 255, 0.5),
+                0 0 20px rgba(78, 205, 196, 0.6);
+        }
+
+        .rocket-window::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            filter: blur(2px);
+        }
+
+        .rocket-fin {
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 0px solid transparent;
+            border-top: 40px solid #c92a2a;
+            position: absolute;
+            bottom: 0;
+            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
+        }
+
+        .rocket-fin.left {
+            left: -20px;
+        }
+
+        .rocket-fin.right {
+            right: -20px;
+            transform: scaleX(-1);
+        }
+
+        .flames {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 90px;
+        }
+
+        .flame {
+            position: absolute;
+            width: 25px;
+            height: 50px;
+            background: linear-gradient(to bottom,
+                #ffffff 0%,
+                #ffeb3b 10%,
+                #ff9800 30%,
+                #ff5722 60%,
+                transparent 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flicker 0.08s infinite alternate;
+            filter: blur(1px);
+        }
+
+        .flame:nth-child(1) {
+            left: 5px;
+            height: 55px;
+            opacity: 0.9;
+        }
+
+        .flame:nth-child(2) {
+            left: 17px;
+            animation-delay: 0.04s;
+            height: 60px;
+        }
+
+        .flame:nth-child(3) {
+            left: 30px;
+            animation-delay: 0.08s;
+            height: 50px;
+            opacity: 0.85;
+        }
+
+        @keyframes flicker {
+            0% {
+                transform: scaleY(1) scaleX(0.95);
+                opacity: 0.9;
+            }
+            100% {
+                transform: scaleY(1.3) scaleX(1.05);
+                opacity: 1;
+            }
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, #ffeb3b, #ff9800);
+            border-radius: 50%;
+            animation: particle-fall 1s infinite;
+            opacity: 0;
+        }
+
+        @keyframes particle-fall {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100px) scale(0.3);
+            }
+        }
+
+        .stars {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        .star.small {
+            width: 1px;
+            height: 1px;
+        }
+
+        .star.medium {
+            width: 2px;
+            height: 2px;
+            box-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+        }
+
+        .star.large {
+            width: 3px;
+            height: 3px;
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+        }
+
+        .star.colored {
+            box-shadow: 0 0 4px currentColor;
+        }
+
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 4px 2px rgba(255, 255, 255, 0.8);
+            animation: shoot 3s ease-in infinite;
+        }
+
+        @keyframes shoot {
+            0% {
+                transform: translateX(0) translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(300px) translateY(300px);
+                opacity: 0;
+            }
+        }
+
+        .shooting-star::before {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, white, transparent);
+            transform: translateX(-100px) translateY(1px);
+        }
+
+        .launch-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5rem;
+            font-weight: 700;
+            text-align: center;
+            opacity: 0;
+            animation: fadeInOut 3.5s ease-in-out;
+            z-index: 100;
+            background: linear-gradient(45deg, #FFD700, #FFA500, #FF6B6B, #4ECDC4);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8))
+                    drop-shadow(0 0 60px rgba(255, 165, 0, 0.6));
+            animation: fadeInOut 3.5s ease-in-out, gradientText 2s ease infinite;
+            letter-spacing: 10px;
+        }
+
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5) rotateX(-90deg);
+            }
+            15% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.2) rotateX(0deg);
+            }
+            25% {
+                transform: translate(-50%, -50%) scale(1) rotateX(0deg);
+            }
+            75% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1) rotateX(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1.5) rotateX(90deg);
+            }
+        }
+
+        .smoke-trail {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(255, 165, 0, 0.3), transparent);
+            border-radius: 50%;
+            animation: smoke-rise 2s ease-out infinite;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        @keyframes smoke-rise {
+            0% {
+                bottom: -60px;
+                opacity: 0.7;
+                transform: translateX(-50%) scale(0.5);
+            }
+            100% {
+                bottom: 200px;
+                opacity: 0;
+                transform: translateX(-50%) scale(2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Stars Background -->
+    <div class="stars" id="stars"></div>
+
+    <!-- Countdown Container -->
+    <div class="countdown-container" id="countdownContainer">
+        <div class="countdown-text">Launching in...</div>
+        <div class="countdown-number" id="countdownNumber">10</div>
+    </div>
+
+    <!-- Rocket Container -->
+    <div class="rocket-container" id="rocketContainer">
+        <div class="launch-text">LIFT OFF!</div>
+        <div class="rocket">
+            <div class="rocket-nose"></div>
+            <div class="rocket-body">
+                <div class="rocket-window"></div>
+                <div class="rocket-fin left"></div>
+                <div class="rocket-fin right"></div>
+            </div>
+            <div class="flames">
+                <div class="flame"></div>
+                <div class="flame"></div>
+                <div class="flame"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create stars with varied sizes and colors
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const colors = ['white', '#4ECDC4', '#FFD700', '#FF6B6B', '#45B7D1'];
+
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                const size = Math.random();
+
+                if (size < 0.5) {
+                    star.className = 'star small';
+                } else if (size < 0.8) {
+                    star.className = 'star medium';
+                } else {
+                    star.className = 'star large';
+                }
+
+                // Add some colored stars
+                if (Math.random() > 0.85) {
+                    star.classList.add('colored');
+                    star.style.color = colors[Math.floor(Math.random() * colors.length)];
+                }
+
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (2 + Math.random() * 3) + 's';
+                starsContainer.appendChild(star);
+            }
+
+            // Create shooting stars
+            for (let i = 0; i < 3; i++) {
+                const shootingStar = document.createElement('div');
+                shootingStar.className = 'shooting-star';
+                shootingStar.style.left = Math.random() * 50 + '%';
+                shootingStar.style.top = Math.random() * 50 + '%';
+                shootingStar.style.animationDelay = (Math.random() * 5) + 's';
+                shootingStar.style.animationDuration = (2 + Math.random() * 2) + 's';
+                starsContainer.appendChild(shootingStar);
+            }
+        }
+
+        createStars();
+
+        // Countdown logic
+        let countdown = 10;
+        const countdownNumber = document.getElementById('countdownNumber');
+        const countdownContainer = document.getElementById('countdownContainer');
+        const rocketContainer = document.getElementById('rocketContainer');
+
+        const countdownInterval = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+                countdownNumber.textContent = countdown;
+                countdownNumber.setAttribute('data-number', countdown);
+                // Trigger animation by removing and re-adding animation
+                countdownNumber.style.animation = 'none';
+                setTimeout(() => {
+                    countdownNumber.style.animation = 'pulse 1s ease-in-out';
+                }, 10);
+            } else {
+                clearInterval(countdownInterval);
+                // Hide countdown
+                countdownContainer.classList.add('hidden');
+                // Show rocket launch
+                rocketContainer.classList.add('active');
+
+                // Create smoke trails
+                const rocket = document.querySelector('.rocket');
+                setInterval(() => {
+                    const smoke = document.createElement('div');
+                    smoke.className = 'smoke-trail';
+                    rocket.appendChild(smoke);
+                    setTimeout(() => smoke.remove(), 2000);
+                }, 200);
+
+                // Redirect after 3.5 seconds (duration of rocket animation)
+                setTimeout(() => {
+                    window.location.href = 'https://austpic.com';
+                }, 3500);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
+
